@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html style="height:100%; margin:0; padding:0">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<style type="text/css">
+			/* Customizable font and colors */
+			html {
+			background: #000000;
+			font-family: sans-serif;
+			font-weight: bold;
+			color: #FFFFFF;
+			}
+			span {
+			display:table;
+			margin-left: auto;
+			margin-right: auto;
+			}
+			td {
+			text-align: center;
+			}
+			.ahead {
+			color: #AAFFAA;
+			}
+			.behind {
+			color: #FFAAAA;
+			}
+.glow {
+  font-size: 80px;
+  color: #fff;
+  text-align: center;
+  animation: glow 1s ease-in-out 2 alternate;
+}
+
+@-webkit-keyframes glow {
+  from {
+    text-shadow: 0 0 0px #fff, 0 0 0px #fff, 0 0 0px #e60073, 0 0 0px #e60073, 0 0 0px #e60073, 0 0 0px #e60073, 0 0 0px #e60073;
+  }
+  
+  to {
+    text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6;
+  }
+}
+			}
+		</style>
+	</head>
+	<body style="height:100%; margin:0; padding:0; justify-content:center; align-items:center">
+		<table border=0 width=100% height="100%">
+		<tr>
+			<!-- clock -->
+			<td rowspan="5" width=100% height=100%>
+				<span id="clocktext" style="font-kerning:none" align="center" class="">?.?</span>
+			</td>
+			<td class="ahead">
+				<span id="ahead">&uarr;&nbsp;?</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="ahead">
+				<span id="aheadgap"><font>0:00</span>
+			</td>
+		</tr>
+		<tr>
+			<td height="25%">
+				<span id="spacer"></span>
+			</td>
+		</tr>
+		<tr>
+			<td class="behind">
+				<span id="behind">&darr;&nbsp;?</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="behind">
+				<span id="behindgap">0:00</span>
+			</td>
+		</tr>
+		<tr>
+			<!-- info -->
+			<td colspan ="2"> 
+				<table id="heatinfo" width=="100%" style="font-size: 13px; color: #999999">
+					<tr>
+						<th>Follow</th>
+						<th>Pos</th>
+						<th>Lap</th>
+						<th>Lap Time</th>
+						<th>Heatname</th>
+						<th>State</th>
+						<th>num drivers</th>
+						<th>Runningtime</th>
+						<th>Starttime</th>
+						<th>Socket</th>
+						<th>data recieved</th>
+					</tr>
+					<tr>
+						<td id="follow">
+							<select id="karts" style="width:150px;"></select>
+						</td>
+						<td id="position">-</td>
+						<td id="lap">0</td>
+						<td id="laptime">0</td>
+						<td id="heatname">?</td>
+						<td id="state"></td>
+						<td id="num_drivers"></td>
+						<td id="runningtime"></td>
+						<td id="starttime"></td>
+						<td id="socket"></td>
+						<td id="updated"></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<table>
+
+		<script language="javascript" type="text/javascript">
+			$(function(){
+			    var wsUri = "wss://broadcast.sms-timing.com:10015/";
+			    var kartfollow = 0;
+			    var init = 0;
+			    var d = [];
+			    var drivers = [];
+			    var heatstart = 0;
+			    var heatstate = [ "not started", "running", "paused", "stopped", "finished", "next heat" ];;
+			
+			    var targetWidth = 0.9;  // Proportion of full screen width
+			    var curFontSize = 20;  // Do not change
+			
+			
+		/*** websocket ***/
+			  function startWebSocket(wsUri)
+			  {
+			    websocket = new WebSocket(wsUri);
+			    websocket.onopen = function(evt) { onOpen(evt) };
+			    websocket.onclose = function(evt) { onClose(evt) };
+			    websocket.onmessage = function(evt) { onMessage(evt) };
+			    websocket.onerror = function(evt) { onError(evt) };
+			  }
+			
+			  function onOpen(evt)
+			  {
+			    socketStatus("CONNECTED");
+			    websocket.send("START 42829@roskilde");
+			  }
+			
+			  function onClose(evt)
+			  {
+			    socketStatus("CLOSED");
+			    console.log('WS CLOSED:');
+			    console.log(evt);
+			    if (evt.code = 1000) {
+				//try reconnect
+			    	console.log('WS TRY RECONNECT:');
+				startWebSocket(wsUri);
+			    }
+			  }
+			
+			  function onError(evt)
+			  {
+			    socketStatus("ERROR");
+			    console.log('WS ERROR:');
+			    console.log(evt);
+			  }
+			
+			
+			
+			  function onMessage(evt)
+			  {
+			    //console.log('Got RESPONSE:');
+			    if (init++ %50 == 0 ) {
+			        console.log(JSON.stringify(JSON.parse(evt.data),null,2));
+			   }
+			
+			        d = JSON.parse(evt.data);
+			        drivers = [];
+			        if (d['D']) {
+			                drivers = d['D'].sort((a,b) => (a.P > b.P ? 1: -1));
+			        }
+			        UpdateHeat();
+			  }
+
+			  function socketStatus(msg)
+			  {
+			        $('#socket').text(msg);
+			  }
+
+		/*** end websocket ***/
+
+		/*** helpers ***/
+			  function msToTime(s) {
+
+  			  // Pad to 2 or 3 digits, default is 2
+  			  	function pad(n, z) {
+    			  		z = z || 2;
+    			  		return ('00' + n).slice(-z);
+  			  	}
+			  
+  			  	var ms = s % 1000;
+  			  	s = (s - ms) / 1000;
+  			  	var secs = s % 60;
+  			  	s = (s - secs) / 60;
+  			  	var mins = s % 60;
+  			  	var hrs = (s - mins) / 60;
+
+  			  	// return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
+  			  	return pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
+			  }
+
+			function startTotime(seconds) {
+				var date = new Date(seconds * 1000);
+				var hh = date.getUTCHours();
+				var mm = date.getUTCMinutes();
+				var ss = date.getSeconds();
+				if (hh < 10) {hh = "0"+hh;}
+				if (mm < 10) {mm = "0"+mm;}
+				if (ss < 10) {ss = "0"+ss;}
+				// This formats your string to HH:MM:SS
+				var t = hh+":"+mm+":"+ss;
+				return t;
+			} 
+		/** end helpers **/
+			
+			  function NewHeat () {
+			        $('#heatname').text(d["N"].replace(/\[HEAT\] /gi,''));
+			        $('#num_drivers').text(d["D"].length || 0);
+			        var st = new Date(d["T"]*1000);
+			        $('#starttime').text(startTotime(d['T']));
+			        /** populate dropdown **/
+			        $('#karts').empty()
+			        $('#karts').append( $('<option></option>').val(0).html('None') );
+			        $.each(drivers.sort((a,b) => (parseInt(a.K) > parseInt(b.K) ? 1: -1)), function(key, val) {
+			                $('#karts').append( $('<option></option>').val(val.K).html(val.K +": " + val.N) )
+			        } );
+			        $("#karts select").val(0);
+			        kartfollow = 0;
+				UpdateHeat();
+			  }
+			
+			
+			  function UpdateHeat () {
+			        var today = new Date();
+			        var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+			        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+			
+			        if (d.N) {
+			                if (d.T != heatstart) {
+			                        NewHeat();
+			                        heatstart = d.T;
+			                }
+			
+			                $('#state').text(heatstate[d.S]);
+			                //$('#runningtime').text(msToTime(d.C || 0));
+			                $('#runningtime').text(startTotime(d.C/1000 || 0));
+			        }
+			        $('#updated').text(startTotime(today.getTime()/1000-today.getTimezoneOffset()*60));
+			        updateLap();
+			
+			  }
+
+			  function updateLap() {
+			    var s = "-.-";
+			    var lap = 0.0;
+			    if (kartfollow>0) {
+			        //get time
+				drivers.forEach( (driver, index, a ) => {
+					if (driver.K == kartfollow) {
+						//console.log("Fundet med idx= " + index);
+						//console.log(driver)
+			                        $('#position').text(driver['P']);
+						if (driver.L != $('#lap').text() && $('#lap').text() > 0 ) {
+							console.log("Flashing");
+							FlashLap();
+						}
+			                       	$('#lap').text(driver.L);
+			                       	$('#laptime').text(msToTime(driver.T,3));
+			        		s = ((driver.T % 10000) / 1000).toFixed(1);
+						// who is ahead
+						if ( index > 0) {
+							$('#ahead').text('\u2191' + drivers[index-1]['K']);
+							$('#aheadgap').text(driver['G']);
+						} else {
+							$('#ahead').text('*');
+							$('#aheadgap').text('leading the pack');
+						}
+						// who is behind
+						if ( index < drivers.length-1) {
+							$('#behind').text('\u2193' + drivers[index+1]['K']);
+							$('#behindgap').text(drivers[index+1]['G']);
+						} else {
+							$('#behind').text('*');
+							$('#behindgap').text('dead last');
+						}
+					}
+				} );
+
+			    }
+  		   	    $('#clocktext').text(s);
+			
+			  }
+			
+			  function unFlashLap() {
+				$('#clocktext').removeClass('glow');
+			  }
+
+			  function FlashLap() {
+				$('#clocktext').addClass('glow');
+				var tid = setTimeout(unFlashLap, 2000);
+			  }
+
+			  function updateTextSize() {
+			    var fak = 1;
+			    var half = 1;
+			    for (var i = 0; 3 > i; i++) {  // Iterate for better better convergence
+			      fak = Math.max( $('#clocktext').width() / $(window).width(), $('#clocktext').height() / $(window).height());
+			      curFontSize *= targetWidth / fak;
+			      half = curFontSize / 4.0;
+			
+			      $('#clocktext').css({ 'font-size': curFontSize + "pt" });
+			      $('#ahead').css({ 'font-size': half + "pt" });
+			      $('#behind').css({ 'font-size': half + "pt" });
+			    }
+			  }
+			
+			  $("#karts" ).change(function() {
+			    kartfollow = $( this ).val();
+			    updateLap();
+			  });
+			
+			
+			  startWebSocket(wsUri);
+			  updateLap();
+			  updateTextSize();
+			  window.addEventListener("resize", updateTextSize);
+			
+			});
+			
+		</script>
+	</body>
+</html>
