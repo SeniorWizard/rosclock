@@ -79,8 +79,8 @@
 		</tr>
 		<tr>
 			<!-- info -->
-			<td colspan ="2"> 
-				<table id="heatinfo" width=="100%" style="font-size: 13px; color: #999999">
+			<td colspan ="2" align="center"> 
+				<table border=0 id="heatinfo" width=="100%" style="font-size: 13px; color: #999999">
 					<tr>
 						<th>Follow</th>
 						<th>Pos</th>
@@ -88,18 +88,18 @@
 						<th>Lap Time</th>
 						<th>Heatname</th>
 						<th>State</th>
-						<th>num drivers</th>
+						<th>#Drivers</th>
 						<th>Runningtime</th>
 						<th>Starttime</th>
 						<th>Socket</th>
-						<th>data recieved</th>
+						<th>Active</th>
 					</tr>
 					<tr>
 						<td id="follow">
 							<select id="karts" style="width:150px;"></select>
 						</td>
 						<td id="position">-</td>
-						<td id="lap">0</td>
+						<td id="lap"> </td>
 						<td id="laptime">0</td>
 						<td id="heatname">?</td>
 						<td id="state"></td>
@@ -221,32 +221,56 @@
 			} 
 		/** end helpers **/
 			
+			  function ClearStatus() {
+			        $('#karts').empty();
+			        $('#position').text('-');
+			        $('#lap').text(' ');
+			        $('#laptime').text(' ');
+			        $('#heatname').text('');
+		                $('#state').text('');
+			        $('#num_drivers').text('');
+			        $('#starttime').text('');
+			        $('#runningtime').text('');
+			  }
+
+			  function ClearTimers() {
+				$('#ahead').text('\u2191 ');
+				$('#aheadgap').text('');
+				$('#behind').text('\u2193 ');
+				$('#behindgap').text('');
+ 	     			$('#clocktext').text('-.-');
+			  }
+
 			  function NewHeat () {
-			        $('#heatname').text(d["N"].replace(/\[HEAT\] /gi,''));
+				ClearStatus();
+				ClearTimers();
+			        $('#heatname').text(d.N.replace(/\[HEAT\] /gi,''));
 			        $('#num_drivers').text(d["D"].length || 0);
-			        var st = new Date(d["T"]*1000);
 			        $('#starttime').text(startTotime(d['T']));
 			        /** populate dropdown **/
-			        $('#karts').empty()
+			        $('#karts').empty();
 			        $('#karts').append( $('<option></option>').val(0).html('None') );
 			        $.each(drivers.sort((a,b) => (parseInt(a.K) > parseInt(b.K) ? 1: -1)), function(key, val) {
 			                $('#karts').append( $('<option></option>').val(val.K).html(val.K +": " + val.N) )
 			        } );
 			        $("#karts select").val(0);
 			        kartfollow = 0;
-				UpdateHeat();
+		                $('#state').text(heatstate[d.S]);
+			        $('#runningtime').text(startTotime(0));
+			        $('#lap').text(' ');
+				updateLap();
 			  }
 			
 			
-			  function UpdateHeat () {
+			  function UpdateHeat() {
 			        var today = new Date();
 			        var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
 			        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 			
 			        if (d.N) {
 			                if (d.T != heatstart) {
-			                        NewHeat();
 			                        heatstart = d.T;
+			                        NewHeat();
 			                }
 			
 			                $('#state').text(heatstate[d.S]);
@@ -260,25 +284,25 @@
 
 			  function updateLap() {
 			    var s = "-.-";
-			    var lap = 0.0;
 			    if (kartfollow>0) {
 			        //get time
 				drivers.forEach( (driver, index, a ) => {
 					if (driver.K == kartfollow) {
 						//console.log("Fundet med idx= " + index);
 						//console.log(driver)
-			                        $('#position').text(driver['P']);
-						if (driver.L != $('#lap').text() && $('#lap').text() > 0 ) {
+			                        $('#position').text(driver.P);
+						if (driver.L != $('#lap').text() && $('#lap').text() != ' ' ) {
 							console.log("Flashing");
 							FlashLap();
 						}
 			                       	$('#lap').text(driver.L);
 			                       	$('#laptime').text(msToTime(driver.T,3));
 			        		s = ((driver.T % 10000) / 1000).toFixed(1);
+  		   	    			$('#clocktext').text(s);
 						// who is ahead
 						if ( index > 0) {
 							$('#ahead').text('\u2191' + drivers[index-1]['K']);
-							$('#aheadgap').text(driver['G']);
+							$('#aheadgap').text(driver.G);
 						} else {
 							$('#ahead').text('*');
 							$('#aheadgap').text('leading the pack');
@@ -295,7 +319,6 @@
 				} );
 
 			    }
-  		   	    $('#clocktext').text(s);
 			
 			  }
 			
@@ -324,6 +347,8 @@
 			
 			  $("#karts" ).change(function() {
 			    kartfollow = $( this ).val();
+			    $('#lap').text(' ');
+			    ClearTimers();
 			    updateLap();
 			  });
 			
