@@ -5,7 +5,7 @@ $(document).ready(function() {
   var wsUri = "wss://broadcast.sms-timing.com:10015/";
   var init = 0;
   var kartfollow = 0;
-  var drivers = [];
+  //var drivers = [];
   var heatstart = 0;
   var heatstate = [ "not started"
                   , "running"
@@ -78,7 +78,7 @@ $(document).ready(function() {
   }
 
   function setDrivers(arr,sel) {
-    setApptitle("setdrivers run: " + arr.length);
+    //setApptitle("setdrivers run: " + arr.length);
     $("#karts").empty();
     $("#karts").append($("<option></option>").val(0).html("None"));
     $.each(arr.sort((a,b) => (parseInt(a.K) > parseInt(b.K) ? 1: -1)), function(key, val) {
@@ -95,7 +95,7 @@ $(document).ready(function() {
   function initinfo() {
     setApptitle("Roskilde Racingcenter");
     setHeatcap("Heat");
-    $("#heatstatus").text("?");
+    $("#heatstatus").text("NO RACE");
     $("#heatstart").text("-");
     $("#heatrunning").text("-");
     //setDrivers( [ { K:2, N:'ole' } ], 0 );
@@ -160,7 +160,7 @@ $(document).ready(function() {
     //UpdateHeat();
     if(d.T) {
 
-      drivers = [];
+      var drivers = [];
       if(d.D) {
         drivers = d.D.sort((a, b) => (a.P > b.P ? 1 : -1));
       }
@@ -193,7 +193,7 @@ $(document).ready(function() {
      heatstart = data.T;
      setHeatcap(data.N.replace(/\[HEAT\] /gi,''));
      setHeatstart(data.T*1000);
-     //showInfo();
+     showInfo();
   }
 
   function pad(n) {
