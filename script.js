@@ -1,6 +1,6 @@
 $(document).ready(function() {
   var noSleep = new NoSleep();
-  var viewmode = 'info';
+  var viewmode = "info";
   console.log("loaded");
   var wsUri = "wss://broadcast.sms-timing.com:10015/";
   var init = 0;
@@ -16,7 +16,7 @@ $(document).ready(function() {
 
   $("#apptitle").click(function() {
     console.log("clicked");
-    if ( viewmode == "info" ) {
+    if ( viewmode === "info" ) {
       showClock();
     } else {
       showInfo();
@@ -35,7 +35,7 @@ $(document).ready(function() {
     noSleep.enable();
   }, false);
 
-  document.addEventListener("visibilitychange", () => {
+  document.addEventListener("visibilitychange", function visChange() {
     console.log(document.visibilityState);
     if(document.visibilityState == "visible") {
       window.location.reload(); //Reload the whole page or use the commands below.
@@ -43,7 +43,7 @@ $(document).ready(function() {
   });
 
   function showClock() {
-    viewmode = 'clock';
+    viewmode = "clock";
     $("status").hide();
     $(".clock").show();
     //document.documentElement.requestFullScreen();
@@ -51,7 +51,7 @@ $(document).ready(function() {
   }
 
   function showInfo() {
-    viewmode = 'info';
+    viewmode = "info";
     $("status").show();
     $(".clock").hide();
     screen.orientation.unlock();
@@ -78,6 +78,7 @@ $(document).ready(function() {
   }
 
   function setDrivers(arr,sel) {
+    setApptitle("setdrivers run: " + arr.length);
     $("#karts").empty();
     $("#karts").append($("<option></option>").val(0).html("None"));
     $.each(arr.sort((a,b) => (parseInt(a.K) > parseInt(b.K) ? 1: -1)), function(key, val) {
@@ -87,7 +88,7 @@ $(document).ready(function() {
   }
 
   function setClock(ms) {
-    num = ((ms % 10000) / 1000).toFixed(1);
+    var num = ((ms % 10000) / 1000).toFixed(1);
     $("#clock").text(num);
   }
 
@@ -132,7 +133,7 @@ $(document).ready(function() {
     socketStatus("CLOSED");
     console.log("WS CLOSED:");
     console.log(evt);
-    if(evt.code == 1000) {
+    if(evt.code === 1000) {
       //try reconnect
       console.log("WS TRY RECONNECT:");
       startWebSocket(wsUri);
@@ -151,7 +152,7 @@ $(document).ready(function() {
     var today = new Date();
     $("#dataactive").text(startTotime(today.getTime() - today.getTimezoneOffset() * 60000))
     //console.log("Got RESPONSE:");
-    if(init++ % 50 == 0) {
+    if(init++ % 50 === 0) {
       console.log(JSON.stringify(JSON.parse(evt.data), null, 2));
     }
 
