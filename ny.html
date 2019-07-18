@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="manifest" href="site.webmanifest">
+<link rel="mask-icon" href="safari-pinned-tab.svg" color="#5bbad5">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="theme-color" content="#ffffff">
+
+    <title>RosClock</title>
+    <!-- Font-awesome -->
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+      integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
+      crossorigin="anonymous"
+    />
+    <!-- jQuery -->
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"
+    ></script>
+    <!-- Styling -->
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Script -->
+    <script src="script.js"></script>
+    <script src="NoSleep.min.js"></script>
+  </head>
+  <body>
+    <!-- Navbar section -->
+
+    <nav class="top_nav">
+      <logo> <img src="logo_transparent.png" alt="" height="45px" /> </logo>
+      <button id="hamburger"><i class="fas fa-check-circle"></i></button>
+    </nav>
+
+<status class="info">
+<table>
+  <caption id="heatcap">Heat</caption>
+  <tr>
+    <td>Status</td>
+    <td id="heatstatus">-</td>
+  </tr>
+  <tr>
+    <td>Start</td>
+    <td id="heatstart">-</td>
+  </tr>
+  <tr>
+    <td>Running</td>
+    <td id="heatrunning">-</td>
+  </tr>
+</table>
+
+<table width="100%">
+  <caption>Drivers</caption>
+  <tr>
+    <td>
+	<select id="karts">
+    <option value="0">Select driver</option>
+         </select>
+   </td>
+  </tr>
+
+<table>
+  <caption id="datacap">Datapipe</caption>
+  <tr>
+    <td>Socket</td>
+    <td id="datasocket">-</td>
+  </tr>
+  <tr>
+    <td>Active</td>
+    <td id="dataactive">-</td>
+  </tr>
+</table>
+</status>
+
+<div class="clock" id="clock" style="display: none;">
+?:?
+</div>
+
+  </body>
+</html>

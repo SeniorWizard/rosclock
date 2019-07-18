@@ -1,0 +1,70 @@
+/* Remove some default styling*/
+* {
+  margin: 0;
+  padding: 0;
+  border: none;
+font-family: sans-serif;
+}
+.top_nav {
+  height: 50px; /* Give navbar fixed height */
+  background-color: black;
+}
+
+#hamburger {
+  width: 30px;
+  height: 30px;
+  float: right;
+  margin: 10px;
+  font-size: 20px;
+  border-radius: 4px;
+}
+body {
+  background-color: black;
+  color: white;
+  font-family: sans-serif;
+}
+
+
+table {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+    margin-left:auto; 
+    margin-right:auto;
+  width: 80%;
+  table-layout: fixed;
+}
+
+table caption {
+  font-size: 1.5em;
+  margin: .5em 0 .75em;
+}
+
+table tr {
+  background-color: #333333;
+  border: 1px solid #ddd;
+  padding: .35em;
+}
+
+table th,
+table td {
+  padding: .625em;
+  text-align: center;
+}
+
+select {
+    display:block;
+  max-width: 400px;
+  min-width: 150px;
+  margin:0 auto;
+  color: #DDDDDD;
+  background-color: black;
+  font-size: 1em;
+}
+ 
+
+.clock {
+	font-size: 40vw;
+        text-align: center;
+        font-weight: bold;
+}
+
