@@ -193,7 +193,7 @@ $(document).ready(function() {
      heatstart = data.T;
      setHeatcap(data.N.replace(/\[HEAT\] /gi,''));
      setHeatstart(data.T*1000);
-     showInfo();
+     //showInfo();
   }
 
   function pad(n) {
