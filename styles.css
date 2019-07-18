@@ -6,22 +6,6 @@
   font-family: sans-serif;
 }
 
-.top_nav {
-  height: 50px; /* Give navbar fixed height */
-  display: grid;
-  grid-template-columns: 50px auto 50px;
-  background-color: black;
-}
-
-#hamburger {
-  width: 30px;
-  height: 30px;
-  float: right;
-  margin: 10px;
-  font-size: 20px;
-  border-radius: 4px;
-}
-
 #apptitle {
   padding: 5px;
   display: block;

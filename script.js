@@ -14,16 +14,17 @@ $(document).ready(function() {
                   , "finished"
                   , "next heat"];
 
-  $(document).click(function() {
+  $("#apptitle").click(function() {
     console.log("clicked");
-    //$("#hamburger i").toggleClass("fa-check-circle").toggleClass("fa-info-circle"); //alternate bars and times
-    //$("status").toggle();
-    //$(".clock").toggle();
     if ( viewmode == "info" ) {
       showClock();
     } else {
       showInfo();
     }
+  });
+
+  $(".clock").click(function() {
+      showInfo();
   });
 
   // Enable wake lock.
@@ -46,7 +47,7 @@ $(document).ready(function() {
     $("status").hide();
     $(".clock").show();
     //document.documentElement.requestFullScreen();
-    screen.orientation.lock("landscape-primary");
+    //screen.orientation.lock("landscape-primary");
   }
 
   function showInfo() {
@@ -215,9 +216,6 @@ $(document).ready(function() {
 
   initinfo();
   startWebSocket(wsUri);
-  $("#karts" ).click(function(e) {
-    e.stopPropagation();
-  });
 
   $("#karts" ).change(function() {
     kartfollow = $( this ).val();
