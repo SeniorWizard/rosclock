@@ -54,7 +54,7 @@ $(document).ready(function() {
     viewmode = "info";
     $("status").show();
     $(".clock").hide();
-    screen.orientation.unlock();
+    //screen.orientation.unlock();
   }
 
   function setApptitle(t) {
