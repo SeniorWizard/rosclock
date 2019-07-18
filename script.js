@@ -1,5 +1,6 @@
 $(document).ready(function() {
   var noSleep = new NoSleep();
+  var viewmode = 'info';
   console.log("loaded");
   var wsUri = "wss://broadcast.sms-timing.com:10015/";
   var init = 0;
@@ -13,18 +14,23 @@ $(document).ready(function() {
                   , "finished"
                   , "next heat"];
 
-  $("#hamburger").click(function() {
+  $(document).click(function() {
     console.log("clicked");
-    $("#hamburger i").toggleClass("fa-check-circle").toggleClass("fa-info-circle"); //alternate bars and times
-    $("status").toggle();
-    $(".clock").toggle();
+    //$("#hamburger i").toggleClass("fa-check-circle").toggleClass("fa-info-circle"); //alternate bars and times
+    //$("status").toggle();
+    //$(".clock").toggle();
+    if ( viewmode == "info" ) {
+      showClock();
+    } else {
+      showInfo();
+    }
   });
 
   // Enable wake lock.
   // (must be wrapped in a user input event handler e.g. a mouse or touch handler)
   document.addEventListener("click", function enableNoSleep() {
     document.removeEventListener("click", enableNoSleep, false);
-    console.log("anti sleep");
+    console.log("anti sleep enable");
     noSleep.enable();
   }, false);
 
@@ -34,6 +40,25 @@ $(document).ready(function() {
       window.location.reload(); //Reload the whole page or use the commands below.
     }
   });
+
+  function showClock() {
+    viewmode = 'clock';
+    $("status").hide();
+    $(".clock").show();
+    //document.documentElement.requestFullScreen();
+    screen.orientation.lock("landscape-primary");
+  }
+
+  function showInfo() {
+    viewmode = 'info';
+    $("status").show();
+    $(".clock").hide();
+    screen.orientation.unlock();
+  }
+
+  function setApptitle(t) {
+    $("#apptitle").text(t);
+  }
 
   function setHeatcap(t) {
     $("#heatcap").text(t);
@@ -66,6 +91,7 @@ $(document).ready(function() {
   }
 
   function initinfo() {
+    setApptitle("Roskilde Racingcenter");
     setHeatcap("Heat");
     $("#heatstatus").text("?");
     $("#heatstart").text("-");
@@ -150,6 +176,7 @@ $(document).ready(function() {
           if (driver.K == kartfollow) {
              //FlashLap();
             setClock(driver.T);
+            setApptitle(driver.N + ' ' + driver.P )
           }
         });
       }
@@ -164,6 +191,7 @@ $(document).ready(function() {
      heatstart = data.T;
      setHeatcap(data.N.replace(/\[HEAT\] /gi,''));
      setHeatstart(data.T*1000);
+     showInfo();
   }
 
   function pad(n) {
@@ -187,9 +215,14 @@ $(document).ready(function() {
 
   initinfo();
   startWebSocket(wsUri);
+  $("#karts" ).click(function(e) {
+    e.stopPropagation();
+  });
+
   $("#karts" ).change(function() {
     kartfollow = $( this ).val();
     setClock(0);
+    showClock();
   });
 
   screen.orientation.addEventListener("change", function(e) {
