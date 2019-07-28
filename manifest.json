@@ -1,5 +1,7 @@
 {
- "name": "RosClock",
+ "name": "Roskilde Racing Personal Timing Clock",
+ "short_name": "RosClock",
+ "display": "standalone",
  "icons": [
   {
    "src": "android-icon-36x36.png",
