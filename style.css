@@ -72,7 +72,7 @@ table td {
 [class*="col-"] {
     width: 100%;
 }
-@media only screen and (min-width: 500px) {
+@media only screen and (min-width: 480px) {
     /* For desktop: */
     .col-1 {width: 8.33%;}
     .col-2 {width: 16.66%;}
