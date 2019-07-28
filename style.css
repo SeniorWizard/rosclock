@@ -18,6 +18,9 @@ body {
   height: 98vh;;
   cursor: pointer;
   -webkit-tap-highlight-color:rgba(0, 0, 0, 0);
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
 .row::after {
