@@ -15,6 +15,20 @@ $(document).ready(function() {
                   , "finished"
                   , "next heat"];
 
+  // Check if it is iOS
+  var isiOS = (navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false);
+
+  if(isiOS === true) {
+
+  // Store -webkit-tap-highlight-color as this gets set to rgba(0, 0, 0, 0) in the next part of the code
+    var tempCSS = $('a').css('-webkit-tap-highlight-color');
+      $('body').css('cursor', 'pointer')                                    // Make iOS honour the click event on body
+        .css('-webkit-tap-highlight-color', 'rgba(0, 0, 0, 0)');     // Stops content flashing when body is clicked
+
+      // Re-apply cached CSS
+      $('a').css('-webkit-tap-highlight-color', tempCSS);
+  }
+
   $( "body" ).on( "click", function(evt) {
     console.log(evt.target.id);
     if (evt.target.id != "karts") {
@@ -23,7 +37,6 @@ $(document).ready(function() {
 
   });
 
-  //$("#apptitle").click(function() {
 
 function changeView () {
     //console.log("clicked");
