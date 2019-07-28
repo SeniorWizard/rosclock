@@ -1,0 +1,13 @@
+html {
+}
+
+.clock {
+  font-size: 45vh;
+  font-weight: bold;
+    transform: rotate(-90deg) translateY(-50%);
+    transform-origin: 50% 50%;
+    width: 100vh;
+    overflow-x: hidden;
+    position: absolute;
+}
+

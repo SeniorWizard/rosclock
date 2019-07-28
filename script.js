@@ -1,10 +1,11 @@
 $(document).ready(function() {
   var noSleep = new NoSleep();
   var viewmode = "info";
-  console.log("loaded");
+  addTolog("loaded");
   var wsUri = "wss://broadcast.sms-timing.com:10015/";
   var init = 0;
   var kartfollow = 0;
+  var lastlap=0;
   //var drivers = [];
   var heatstart = 0;
   var heatstate = [ "not started"
@@ -14,29 +15,35 @@ $(document).ready(function() {
                   , "finished"
                   , "next heat"];
 
-  $("#apptitle").click(function() {
-    console.log("clicked");
+  $( "body" ).on( "click", function(evt) {
+    console.log(evt.target.id);
+    if (evt.target.id != "karts") {
+      changeView();
+    }
+
+  });
+
+  //$("#apptitle").click(function() {
+
+function changeView () {
+    //console.log("clicked");
     if ( viewmode === "info" ) {
       showClock();
     } else {
       showInfo();
     }
-  });
-
-  $(".clock").click(function() {
-      showInfo();
-  });
+ }
 
   // Enable wake lock.
   // (must be wrapped in a user input event handler e.g. a mouse or touch handler)
   document.addEventListener("click", function enableNoSleep() {
     document.removeEventListener("click", enableNoSleep, false);
-    console.log("anti sleep enable");
+    addTolog("anti sleep enable");
     noSleep.enable();
   }, false);
 
   document.addEventListener("visibilitychange", function visChange() {
-    console.log(document.visibilityState);
+    addTolog(document.visibilityState);
     if(document.visibilityState == "visible") {
       window.location.reload(); //Reload the whole page or use the commands below.
     }
@@ -44,16 +51,20 @@ $(document).ready(function() {
 
   function showClock() {
     viewmode = "clock";
-    $("status").hide();
-    $(".clock").show();
-    //document.documentElement.requestFullScreen();
-    //screen.orientation.lock("landscape-primary");
+    $("#col1").hide()
+    $("#col2").hide()
+    $("#colall").show()
+    //$("status").hide();
+    //$(".clock").show();
   }
 
   function showInfo() {
     viewmode = "info";
-    $("status").show();
-    $(".clock").hide();
+    $("#col1").show()
+    $("#col2").show()
+    $("#colall").hide()
+    //$("status").show();
+    //$(".clock").hide();
     //screen.orientation.unlock();
   }
 
@@ -90,6 +101,21 @@ $(document).ready(function() {
   function setClock(ms) {
     var num = ((ms % 10000) / 1000).toFixed(1);
     $("#clock").text(num);
+  }
+
+  function unFlashLap() {
+    $('#clock').removeClass('glow');
+  }
+
+  function FlashLap() {
+    $('#clock').addClass('glow');
+    var tid = setTimeout(unFlashLap, 2000);
+  }
+
+  function getTime() {
+    var today = new Date();
+    var now = startTotime(today.getTime() - today.getTimezoneOffset() * 60000);
+    return now;
   }
 
   function initinfo() {
@@ -131,27 +157,25 @@ $(document).ready(function() {
 
   function onClose(evt) {
     socketStatus("CLOSED");
-    console.log("WS CLOSED:");
+    addTolog("WS CLOSED:");
     console.log(evt);
     if(evt.code === 1000) {
       //try reconnect
-      console.log("WS TRY RECONNECT:");
+      addTolog("WS TRY RECONNECT:");
       startWebSocket(wsUri);
     }
   }
 
   function onError(evt) {
     socketStatus("ERROR");
-    console.log("WS ERROR:");
-    console.log(evt);
+    addTolog("WS ERROR:");
+    addTolog(evt);
   }
 
 
 
   function onMessage(evt) {
-    var today = new Date();
-    $("#dataactive").text(startTotime(today.getTime() - today.getTimezoneOffset() * 60000))
-    //console.log("Got RESPONSE:");
+    $("#dataactive").text(getTime());
     if(init++ % 50 === 0) {
       console.log(JSON.stringify(JSON.parse(evt.data), null, 2));
     }
@@ -175,9 +199,14 @@ $(document).ready(function() {
       setHeatrunning(d.C);
       if (kartfollow > 0) {
         drivers.forEach( (driver, index, a ) => {
-          if (driver.K == kartfollow) {
-             //FlashLap();
+          if (driver.K === kartfollow && driver.L > 0) {
             setClock(driver.T);
+            if (driver.L > lastlap) {
+               lastlap = driver.L;
+               addTolog(driver.N + " ("+ driver.L + "): " + lapTotime(driver.T));
+               FlashLap();
+            }
+
             setApptitle(driver.N + ' ' + driver.P )
           }
         });
@@ -204,6 +233,17 @@ $(document).ready(function() {
   }
 
   /*** end websocket ***/
+
+  function addTolog(msg) {
+    console.log(msg);
+    $("<div />").text(getTime() +': ' + msg).appendTo("#debuglog")
+    var height = $("#debuglog").get(0).scrollHeight;
+    console.log('h:'+ height);
+    $("#debuglog").animate({
+      scrollTop: height
+    }, 100);
+  }
+
   function startTotime(mseconds) {
     var date = new Date(mseconds);
     var hh = date.getUTCHours();
@@ -214,13 +254,21 @@ $(document).ready(function() {
     return t;
   }
 
+  function lapTotime(mseconds) {
+    var date = new Date(mseconds);
+    var t = date.getMinutes() + ":" + pad(date.getSeconds()) + "." + pad(Math.round(date.getMilliseconds()/10));
+    return t;
+  }
 
   initinfo();
   startWebSocket(wsUri);
 
   $("#karts" ).change(function() {
     kartfollow = $( this ).val();
-    setClock(0);
+    lastlap=0;
+    //setClock(0);
+    $("#clock").text('?.?');
+    setApptitle($(this).find("option:selected").text());
     showClock();
   });
 
