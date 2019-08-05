@@ -6,7 +6,7 @@ $(document).ready(function() {
   var init = 0;
   var kartfollow = 0;
   var lastlap=0;
-  //var drivers = [];
+  var drivers = [];
   var heatstart = 0;
   var heatstate = [ "not started"
                   , "running"
@@ -200,6 +200,18 @@ function changeView () {
   }
 
 
+  function setDriver (driver) {
+     if (driver.L > 0) {
+       setClock(driver.T);
+       if (driver.L > lastlap) {
+          lastlap = driver.L;
+          addTolog(driver.N + " ("+ driver.L + "): " + lapTotime(driver.T));
+          FlashLap();
+       }
+
+       setApptitle(driver.N + ' ' + driver.P )
+    }
+  }
 
   function onMessage(evt) {
     $("#dataactive").text(getTime());
@@ -211,7 +223,7 @@ function changeView () {
     //UpdateHeat();
     if(d.T) {
 
-      var drivers = [];
+      //var drivers = [];
       if(d.D) {
         drivers = d.D.sort((a, b) => (a.P > b.P ? 1 : -1));
       }
@@ -227,14 +239,7 @@ function changeView () {
       if (kartfollow > 0) {
         drivers.forEach( (driver, index, a ) => {
           if (driver.K === kartfollow && driver.L > 0) {
-            setClock(driver.T);
-            if (driver.L > lastlap) {
-               lastlap = driver.L;
-               addTolog(driver.N + " ("+ driver.L + "): " + lapTotime(driver.T));
-               FlashLap();
-            }
-
-            setApptitle(driver.N + ' ' + driver.P )
+            setDriver(driver);
           }
         });
       }
@@ -295,8 +300,14 @@ function changeView () {
     lastlap=0;
     //setClock(0);
     $("#clock").text('?.?');
-    setApptitle($(this).find("option:selected").text());
     showClock();
+    setApptitle($(this).find("option:selected").text());
+    drivers.forEach( (driver, index, a ) => {
+      if (driver.K === kartfollow && driver.L > 0) {
+        lastlap = driver.L;
+        setDriver(driver);
+      }
+    });
   });
 
   screen.orientation.addEventListener("change", function(e) {
