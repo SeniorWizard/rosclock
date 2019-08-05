@@ -19,14 +19,14 @@ const RUNTIME = 'runtime';
 
 // A list of local resources we always want to be cached.
 const PRECACHE_URLS = [
-  'NoSleep.min.js',
-  'portrait.css',
-  'landscape.css',
-  'script.js',
-  'style.css',
-  'index.html',
+  '/NoSleep.min.js',
+  '/portrait.css',
+  '/landscape.css',
+  '/script.js',
+  '/style.css',
+  '/index.html',
   './', // Alias for index.html
-  'favicon.ico'
+  '/favicon.ico'
 ];
 
 // The install handler takes care of precaching the resources we always need.
