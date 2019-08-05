@@ -31,7 +31,7 @@ $(document).ready(function() {
 
   $( "body" ).on( "click", function(evt) {
     console.log(evt.target.id);
-    if (evt.target.id != "karts") {
+    if (evt.target.id != "karts" && evt.target.id != '') {
       changeView();
     }
 
@@ -291,6 +291,56 @@ function changeView () {
     var t = date.getMinutes() + ":" + pad(date.getSeconds()) + "." + pad(Math.round(date.getMilliseconds()/10));
     return t;
   }
+
+const Installer = function(root) {
+  let promptEvent;
+
+  const install = function(e) {
+    if(promptEvent) {
+      promptEvent.prompt();
+      promptEvent.userChoice
+        .then(function(choiceResult) {
+          // The user actioned the prompt (good or bad).
+          // good is handled in 
+          promptEvent = null;
+          root.classList.remove('available');
+          console.log("rm ava inst ok");
+        })
+        .catch(function(installError) {
+          // Boo. update the UI.
+          promptEvent = null;
+          root.classList.remove('available');
+          console.log("rm ava inst not ok");
+        });
+    }
+  };
+
+  const installed = function(e) {
+    promptEvent = null;
+    // This fires after onbeforinstallprompt OR after manual add to homescreen.
+    root.classList.remove('available');
+          console.log("rm ava is installed");
+  };
+
+  const beforeinstallprompt = function(e) {
+    promptEvent = e;
+    promptEvent.preventDefault();
+    root.classList.add('available');
+          console.log("add ava");
+    return false;
+  };
+
+  window.addEventListener('beforeinstallprompt', beforeinstallprompt);
+  window.addEventListener('appinstalled', installed);
+
+  root.addEventListener('click', install.bind(this));
+  root.addEventListener('touchend', install.bind(this));
+  console.log("installer init");
+};
+
+
+  const installEl = document.getElementById('installer');
+  const installer = new Installer(installEl);
 
   initinfo();
   startWebSocket(wsUri);

@@ -113,6 +113,27 @@ select {
   animation: glow 1s ease-in-out 2 alternate;
 }
 
+#installer {
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: 0;
+    text-align: center;
+    transition: opacity 300ms ease-in-out;
+}
+
+#installer.available {
+    opacity: 1;
+}
+
+#installer .button {
+    border: #CCCCCC 1px solid;
+    margin:10px;
+    padding: 10px;
+    color: white;
+    background-color: transparent;
+}
+
 @-webkit-keyframes glow {
   from {
     text-shadow: 0 0 1vw #fff, 0 0 2vw #fff, 0 0 3vw #e60073, 0 0 4vw #e60073, 0 0 5vw #e60073, 0 0 6vw #e60073, 0 0 7vw #e60073;
