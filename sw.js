@@ -15,7 +15,7 @@
 // Change to v2, etc. when you update any of the local resources, which will
 // in turn trigger the install event again.
 
-const version = "1.0.2";
+const version = "1.0.3";
 const cacheName = `rosclock-${version}`;
 
 

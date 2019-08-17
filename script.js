@@ -1,10 +1,11 @@
 $(document).ready(function() {
   var noSleep = new NoSleep();
   var viewmode = "info";
-  addTolog("loaded");
+  addTolog("loaded ");
   var wsUri = "wss://broadcast.sms-timing.com:10015/";
   var init = 0;
   var kartfollow = 0;
+  var namefollow = '';
   var lastlap=0;
   var drivers = [];
   var heatstart = 0;
@@ -36,20 +37,6 @@ $(document).ready(function() {
     }
 
   });
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js').then(function(registration) {
-      // Registration was successful
-      console.log('ServiceWorker registration successful with scope: ', registration.scope);
-    }, function(err) {
-      // registration failed :(
-      console.log('ServiceWorker registration failed: ', err);
-    });
-  });
-} else {
-  console.log("ServiceWorker not avalible");
-}
 
 
 function changeView () {
@@ -117,12 +104,20 @@ function changeView () {
 
   function setDrivers(arr,sel) {
     //setApptitle("setdrivers run: " + arr.length);
+    var selected = sel || 0;
     $("#karts").empty();
     $("#karts").append($("<option></option>").val(0).html("None"));
     $.each(arr.sort((a,b) => (parseInt(a.K) > parseInt(b.K) ? 1: -1)), function(key, val) {
        $('#karts').append( $('<option></option>').val(val.K).html(val.K +": " + val.N) )
+       if ( selected == 0 && val.N == namefollow ) {
+         selected = val.K;
+         kartfollow = val.K;
+         console.log("found "+namefollow);
+       }
     } );
-    $("#karts select").val(sel || 0);
+    console.log("setting  "+selected);
+    //$("#karts select").val(selected);
+    $('#karts option[value="' + selected +'"]').prop('selected', true);
   }
 
   function setClock(ms) {
@@ -184,12 +179,13 @@ function changeView () {
 
   function onClose(evt) {
     socketStatus("CLOSED");
-    addTolog("WS CLOSED:");
     console.log(evt);
     if(evt.code === 1000) {
       //try reconnect
-      addTolog("WS TRY RECONNECT:");
+      addTolog("reconnecting :");
       startWebSocket(wsUri);
+    } else {
+      addTolog("WS CLOSED:" + evt.code);
     }
   }
 
@@ -205,7 +201,14 @@ function changeView () {
        setClock(driver.T);
        if (driver.L > lastlap) {
           lastlap = driver.L;
-          addTolog(driver.N + " ("+ driver.L + "): " + lapTotime(driver.T));
+          var best = 0;
+          var log = driver.N + " ("+ driver.L + "): " + lapTotime(driver.T);
+          if ( driver.T <= driver.B && driver.L > 1) {
+            best = 1;
+            log += " **";
+          }
+            
+          addTolog(log);
           FlashLap();
        }
 
@@ -215,7 +218,7 @@ function changeView () {
 
   function onMessage(evt) {
     $("#dataactive").text(getTime());
-    if(init++ % 50 === 0) {
+    if(init++ % 500 === 0) {
       console.log(JSON.stringify(JSON.parse(evt.data), null, 2));
     }
 
@@ -252,7 +255,9 @@ function changeView () {
 
   function NewHeat (data) {
      heatstart = data.T;
-     setHeatcap(data.N.replace(/\[HEAT\] /gi,''));
+     var heatname = data.N.replace(/\[HEAT\] /gi,'');
+     setHeatcap(heatname);
+     addTolog("New heat: " + heatname);
      setHeatstart(data.T*1000);
      showInfo();
   }
@@ -270,7 +275,7 @@ function changeView () {
     console.log(msg);
     $("<div />").text(getTime() +': ' + msg).appendTo("#debuglog")
     var height = $("#debuglog").get(0).scrollHeight;
-    console.log('h:'+ height);
+    //console.log('h:'+ height);
     $("#debuglog").animate({
       scrollTop: height
     }, 100);
@@ -326,7 +331,6 @@ const Installer = function(root) {
     promptEvent = e;
     promptEvent.preventDefault();
     root.classList.add('available');
-          console.log("add ava");
     return false;
   };
 
@@ -355,6 +359,7 @@ const Installer = function(root) {
     drivers.forEach( (driver, index, a ) => {
       if (driver.K === kartfollow && driver.L > 0) {
         lastlap = driver.L;
+        namefollow = driver.N;
         setDriver(driver);
       }
     });
