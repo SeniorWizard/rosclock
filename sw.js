@@ -15,7 +15,7 @@
 // Change to v2, etc. when you update any of the local resources, which will
 // in turn trigger the install event again.
 
-const version = "1.0.3";
+const version = "1.0.4";
 const cacheName = `rosclock-${version}`;
 
 
@@ -23,6 +23,7 @@ self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(cacheName).then(cache => {
       return cache.addAll([
+        'https://code.jquery.com/jquery-3.4.1.min.js', 
         '/', 
         '/index.html',
         '/style.css',
