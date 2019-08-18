@@ -58,8 +58,12 @@ function changeView () {
 
   document.addEventListener("visibilitychange", function visChange() {
     addTolog(document.visibilityState);
-    if(document.visibilityState == "visible") {
-      window.location.reload(); //Reload the whole page or use the commands below.
+	if (document.hidden) {
+        clearTimeout(noSleepTimer);
+        noSleep.disable();
+    } else {
+        noSleep.disable(); // Make sure old instance is disabled or the below iOS fix may break Android
+        noSleep = new NoSleep(); // For iOS
     }
   });
 
@@ -239,6 +243,7 @@ function changeView () {
 
       setHeatstate(heatstate[d.S]);
       setHeatrunning(d.C);
+	  //console.log("find kart: "+kartfollow);
       if (kartfollow > 0) {
         drivers.forEach( (driver, index, a ) => {
           if (driver.K === kartfollow && driver.L > 0) {
@@ -357,7 +362,7 @@ const Installer = function(root) {
     showClock();
     setApptitle($(this).find("option:selected").text());
     drivers.forEach( (driver, index, a ) => {
-      if (driver.K === kartfollow && driver.L > 0) {
+      if (driver.K === kartfollow) {
         lastlap = driver.L;
         namefollow = driver.N;
         setDriver(driver);

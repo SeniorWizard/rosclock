@@ -15,7 +15,7 @@
 // Change to v2, etc. when you update any of the local resources, which will
 // in turn trigger the install event again.
 
-const version = "1.0.5";
+const version = "1.0.6";
 const cacheName = `rosclock-${version}`;
 
 var urlsToPrefetch = [
