@@ -15,15 +15,10 @@
 // Change to v2, etc. when you update any of the local resources, which will
 // in turn trigger the install event again.
 
-const version = "1.0.4";
+const version = "1.0.5";
 const cacheName = `rosclock-${version}`;
 
-
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(cacheName).then(cache => {
-      return cache.addAll([
-        'https://code.jquery.com/jquery-3.4.1.min.js', 
+var urlsToPrefetch = [
         '/', 
         '/index.html',
         '/style.css',
@@ -31,10 +26,21 @@ self.addEventListener('install', e => {
         '/landscape.css',
         '/NoSleep.min.js',
         '/script.js',
-        '/favicon.ico'
-      ])
+        '/favicon.ico',
+        'https://code.jquery.com/jquery-3.4.1.min.js', 
+      ];
+
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(cacheName)
+	  .then(function(cache) {
+        console.log('Opened cache');
+        // Magic is here. Look the  mode: 'no-cors' part.
+        cache.addAll(urlsToPrefetch.map(function(urlToPrefetch) {
+           return new Request(urlToPrefetch, { mode: 'no-cors' });
+        });
         .then(() => self.skipWaiting());
-    })
+     })
   );
 });
 
