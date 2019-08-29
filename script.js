@@ -4,6 +4,7 @@ $(document).ready(function() {
   addTolog("loaded ");
   var wsUri = "wss://broadcast.sms-timing.com:10015/";
   var init = 0;
+  var wserror = 0;
   var kartfollow = 0;
   var namefollow = '';
   var lastlap=0;
@@ -72,8 +73,6 @@ function changeView () {
     $("#col1").hide()
     $("#col2").hide()
     $("#colall").show()
-    //$("status").hide();
-    //$(".clock").show();
   }
 
   function showInfo() {
@@ -81,8 +80,6 @@ function changeView () {
     $("#col1").show()
     $("#col2").show()
     $("#colall").hide()
-    //$("status").show();
-    //$(".clock").hide();
     //screen.orientation.unlock();
   }
 
@@ -144,6 +141,11 @@ function changeView () {
     return now;
   }
 
+  function sleep(delay) {
+    var start = new Date().getTime();
+    while (new Date().getTime() < start + delay);
+  }
+
   function initinfo() {
     setApptitle("Roskilde Racingcenter");
     setHeatcap("Heat");
@@ -169,9 +171,11 @@ function changeView () {
       onClose(evt)
     };
     websocket.onmessage = function(evt) {
+	  wserror = 0;
       onMessage(evt)
     };
     websocket.onerror = function(evt) {
+	  wserror++;
       onError(evt)
     };
   }
@@ -184,8 +188,9 @@ function changeView () {
   function onClose(evt) {
     socketStatus("CLOSED");
     console.log(evt);
-    if(evt.code === 1000) {
+    if(evt.code === 1000 || evt.code == 1006) {
       //try reconnect
+	  sleep(1000 * wserror);
       addTolog("reconnecting :");
       startWebSocket(wsUri);
     } else {
@@ -197,6 +202,9 @@ function changeView () {
     socketStatus("ERROR");
     addTolog("WS ERROR:");
     addTolog(evt);
+	if (wserror > 5) {
+		 window.location.reload();
+	}
   }
 
 
