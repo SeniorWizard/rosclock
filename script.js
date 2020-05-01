@@ -2,7 +2,8 @@ $(document).ready(function() {
   var noSleep = new NoSleep();
   var viewmode = "info";
   addTolog("loaded ");
-  var wsUri = "wss://broadcast.sms-timing.com:10015/";
+  //var wsUri = "wss://broadcast.sms-timing.com:10015/";
+  var wsUri = "ws://broadcast.sms-timing.com:10001/";
   var init = 0;
   var wserror = 0;
   var kartfollow = 0;

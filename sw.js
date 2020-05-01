@@ -38,7 +38,7 @@ self.addEventListener('install', e => {
         // Magic is here. Look the  mode: 'no-cors' part.
         cache.addAll(urlsToPrefetch.map(function(urlToPrefetch) {
            return new Request(urlToPrefetch, { mode: 'no-cors' });
-        }));
+        }))
         .then(() => self.skipWaiting());
      })
   );
