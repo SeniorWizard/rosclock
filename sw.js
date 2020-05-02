@@ -15,7 +15,7 @@
 // Change to v2, etc. when you update any of the local resources, which will
 // in turn trigger the install event again.
 
-const version = "1.0.8";
+const version = "1.0.9";
 const cacheName = `rosclock-${version}`;
 
 var urlsToPrefetch = [
@@ -27,7 +27,7 @@ var urlsToPrefetch = [
         '/NoSleep.min.js',
         '/script.js',
         '/favicon.ico',
-        'https://code.jquery.com/jquery-3.4.1.min.js', 
+        'https://code.jquery.com/jquery-3.5.0.min.js',
       ];
 
 self.addEventListener('install', e => {
