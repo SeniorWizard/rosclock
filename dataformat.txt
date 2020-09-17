@@ -1,0 +1,43 @@
+
+
+    // Heat
+    // "N" = HeatName
+    // "S" = State
+    //      0 = not started
+    //      1 = running
+    //      2 = pauzed
+    //      3 = stopped
+    //      4 = finished
+    //      5 = next heat
+    // "E" = EndCondition
+    //      0 = the heat needs to be finished manual
+    //      1 = the heat finishes after X time
+    //      2 = the heat finishes after X laps
+    //      3 = the heat finished after X time or X laps. Depends on wich one is first
+    // "R" = RaceMode
+    //      0 = most laps wins
+    //      1 = the best laptime is the winner
+    //      2 = the best average time is the winner
+    // "D" = Drivers [array]
+    // "C" = Counter (in milliseconds)
+    // "CS" = ClockStarted
+    //      0 = not started
+    //      1 = started
+    // "L" = RemainingLaps
+    // "T" = ActualHeatStart
+
+	// Driver
+    // "D" = DriverID
+    // "M" = WebMemberID
+    // "N" = DriverName
+    // "K" = KartNumber
+    // "P" = Position
+    // "L" = Laps
+    // "T" = LastLapTimeMS
+    // "A" = AvarageLapTimeMS
+    // "B" = BestLapTimeMS
+    // "G" = gap
+    // "LP" = LastPassing
+    //      0 = not the last passing
+    //      1 = last passing
+    // "R" = LastRecord
