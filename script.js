@@ -184,6 +184,7 @@ function changeView () {
   function onOpen(evt) {
     socketStatus("CONNECTED");
     websocket.send("START 42829@roskilde");
+    //websocket.send("START 19373@racehallcph");
   }
 
   function onClose(evt) {
